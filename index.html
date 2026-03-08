@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Tourist Crowd Monitor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Leaflet CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+
+  <!-- MQTT.js (browser build) -->
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+</head>
+<body>
+  <header class="app-header">
+    <div class="branding">
+      <h1>Smart Tourist Crowd Monitor</h1>
+      <p>Live public crowd safety platform</p>
+    </div>
+    <nav class="main-nav" aria-label="Main navigation">
+      <button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="nav-menu">
+        <span class="hamburger"></span>
+      </button>
+      <ul class="nav-menu" id="nav-menu">
+        <li><a href="#spots-section">Spots</a></li>
+        <li><a href="#map-section">Map</a></li>
+      </ul>
+    </nav>
+    <div class="connection-status">
+      <span id="mqtt-status-dot" class="status-dot offline"></span>
+      <span id="mqtt-status-text">Connecting to MQTT…</span>
+    </div>
+  </header>
+
+  <main class="app-main">
+    <!-- City / Location Section -->
+    <section class="city-section">
+      <div class="city-info">
+        <h2 id="city-title">Tourist Spots near your area</h2>
+        <p id="city-subtitle">
+          Detecting your location using browser geolocation…
+        </p>
+      </div>
+      <div class="city-meta">
+        <span id="geo-status" class="pill pill-muted">Locating…</span>
+      </div>
+    </section>
+
+    <!-- Tourist Spot Grid -->
+    <section class="spots-section" id="spots-section">
+      <div class="section-header">
+        <h2>Live Tourist Crowd Snapshot</h2>
+        <p>Real-time people count, comfort, and safety from IoT sensors.</p>
+      </div>
+
+      <div id="spots-grid" class="spots-grid">
+        <!-- Cards are injected by script.js -->
+      </div>
+    </section>
+
+    <!-- Map Section -->
+    <section class="map-section" id="map-section">
+      <div class="section-header">
+        <h2>City Tourist Map</h2>
+        <p>Visual view of monitored tourist locations around you.</p>
+      </div>
+      <div id="map" class="map-container"></div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <span>Data source: MQTT over WebSockets via HiveMQ public broker</span>
+    <span class="dot-separator">•</span>
+    <span>Demo simulation only – not official safety guidance</span>
+  </footer>
+
+  <!-- Spot Details Modal -->
+  <div id="spot-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-hidden="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+      <button class="modal-close" id="modal-close" aria-label="Close modal">&times;</button>
+      <div class="modal-body">
+        <h2 id="modal-title" class="modal-spot-name"></h2>
+        <div class="modal-gallery">
+          <div class="gallery-main">
+            <img class="gallery-img" src="" alt="" />
+          </div>
+          <div class="gallery-thumbs"></div>
+        </div>
+        <p class="modal-description"></p>
+        <div class="modal-meta">
+          <div class="meta-item">
+            <span class="meta-label">Crowd level</span>
+            <div class="crowd-indicator">
+              <div class="crowd-bar-modal"><div class="crowd-fill-modal"></div></div>
+              <span class="crowd-label-modal"></span>
+            </div>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Best visiting time</span>
+            <span class="meta-value" data-role="best-time"></span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Location</span>
+            <span class="meta-value" data-role="location"></span>
+          </div>
+        </div>
+        <!-- Per-spot overcrowding alert (shown only when this spot has high crowd) -->
+        <div id="modal-alert" class="modal-alert hidden">
+          <div class="modal-alert-inner">
+            <div class="guide-character" aria-hidden="true"></div>
+            <div class="alert-content">
+              <h3>Overcrowding risk detected at <span data-role="alert-spot-name"></span></h3>
+              <p>Consider visiting during non-peak hours.</p>
+              <p class="guide-tip" data-role="guide-tip"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""></script>
+  <script src="spots-data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
+
